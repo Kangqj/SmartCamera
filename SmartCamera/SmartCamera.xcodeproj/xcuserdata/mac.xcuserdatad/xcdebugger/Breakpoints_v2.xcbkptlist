@@ -10,12 +10,12 @@
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "SmartCamera/ViewController.m"
-            timestampString = "467563830.320419"
+            timestampString = "470584571.128652"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "214"
-            endingLineNumber = "214"
-            landmarkName = "-showPhotoWith:"
+            startingLineNumber = "225"
+            endingLineNumber = "225"
+            landmarkName = "-captureOutput:didOutputSampleBuffer:fromConnection:"
             landmarkType = "5">
          </BreakpointContent>
       </BreakpointProxy>

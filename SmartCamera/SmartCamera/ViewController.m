@@ -10,10 +10,13 @@
 #import <AVFoundation/AVFoundation.h>
 #import "UIDevice+ExifOrientation.h"
 #import <AssetsLibrary/AssetsLibrary.h>
+#import "ShowImageViewController.h"
 
 @interface ViewController ()<AVCaptureVideoDataOutputSampleBufferDelegate>
 {
     BOOL isRunning;
+    
+    BOOL isSave;
 }
 
 @property (strong, nonatomic) UIImageView *cameraView;
@@ -92,7 +95,8 @@
     
     //相机拍摄预览图层
     AVCaptureVideoPreviewLayer *previewLayer = [[AVCaptureVideoPreviewLayer alloc] initWithSession:self.session];
-    previewLayer.frame = CGRectMake((self.view.frame.size.width-300)/2, 20, 300, 300);
+//    previewLayer.frame = CGRectMake((self.view.frame.size.width-300)/2, 20, 300, 300);
+    previewLayer.frame = CGRectMake(0, 0, self.view.frame.size.width, self.view.frame.size.height);
     previewLayer.backgroundColor = [[UIColor lightGrayColor] CGColor];
 //    previewLayer.videoGravity = AVLayerVideoGravityResizeAspectFill;
     [self.view.layer addSublayer:previewLayer];
@@ -177,50 +181,285 @@
     
     NSArray *features = [self.faceDetector featuresInImage:ciImage
                                                    options:detectionOtions];
-    NSLog(@"----------%ld--------",features.count);
+    NSLog(@"----------%d--------",features.count);
+    
+    if (isSave)
+    {
+        return;
+    }
+    
+    for (CIFaceFeature *faceFeature in features){
+        
+        CGFloat faceWidth = faceFeature.bounds.size.width;
+        
+        // create a UIView using the bounds of the face
+        UIView* faceView = [[UIView alloc] initWithFrame:faceFeature.bounds];
+        
+        // add a border around the newly created UIView
+        
+        faceView.layer.borderWidth = 1;
+        faceView.layer.borderColor = [[UIColor redColor] CGColor];
+        
+        [self.view addSubview:faceView];
+        
+        if(faceFeature.hasLeftEyePosition)
+            
+        {
+            // create a UIView with a size based on the width of the face
+            
+            UIView* leftEyeView = [[UIView alloc] initWithFrame:
+                                   CGRectMake(faceFeature.leftEyePosition.x-faceWidth*0.15,
+                                              faceFeature.leftEyePosition.y-faceWidth*0.15, faceWidth*0.3, faceWidth*0.3)];
+            
+            // change the background color of the eye view
+            [leftEyeView setBackgroundColor:[[UIColor blueColor]
+                                             colorWithAlphaComponent:0.3]];
+            
+            // set the position of the leftEyeView based on the face
+            [leftEyeView setCenter:faceFeature.leftEyePosition];
+            
+            // round the corners
+            leftEyeView.layer.cornerRadius = faceWidth*0.15;
+            
+            // add the view to the window
+            [self.view  addSubview:leftEyeView];
+            
+        }
+        
+        if(faceFeature.hasRightEyePosition)
+            
+        {
+            // create a UIView with a size based on the width of the face
+            UIView* leftEye = [[UIView alloc] initWithFrame:
+                               CGRectMake(faceFeature.rightEyePosition.x-faceWidth*0.15,
+                                          faceFeature.rightEyePosition.y-faceWidth*0.15, faceWidth*0.3, faceWidth*0.3)];
+            
+            // change the background color of the eye view
+            [leftEye setBackgroundColor:[[UIColor blueColor]
+                                         colorWithAlphaComponent:0.3]];
+            
+            // set the position of the rightEyeView based on the face
+            [leftEye setCenter:faceFeature.rightEyePosition];
+            
+            // round the corners
+            leftEye.layer.cornerRadius = faceWidth*0.15;
+            
+            // add the new view to the window
+            [self.view  addSubview:leftEye];
+        }
+        
+        if(faceFeature.hasMouthPosition)
+        {
+            
+            // create a UIView with a size based on the width of the face
+            UIView* mouth = [[UIView alloc] initWithFrame:
+                             CGRectMake(faceFeature.mouthPosition.x-faceWidth*0.2,
+                                        faceFeature.mouthPosition.y-faceWidth*0.2, faceWidth*0.4, faceWidth*0.4)];
+            
+            // change the background color for the mouth to green
+            [mouth setBackgroundColor:[[UIColor greenColor]
+                                       colorWithAlphaComponent:0.3]];
+            
+            // set the position of the mouthView based on the face
+            [mouth setCenter:faceFeature.mouthPosition];
+            
+            // round the corners
+            mouth.layer.cornerRadius = faceWidth*0.2;
+            
+            // add the new view to the window
+            [self.view  addSubview:mouth];
+        }       
+        
+    }
+    
+    
     for ( CIFaceFeature *faceFeature in features)
     {
         if (faceFeature.hasSmile)
         {
             NSLog(@"----------笑了--------");
-            [self showPhotoWith:ciImage];
+            [self showPhotoWith:sampleBuffer];
             isRunning = NO;
         }
-        if (faceFeature.leftEyeClosed)
+        else if (faceFeature.leftEyeClosed)
         {
             NSLog(@"----------左眼眨眼--------");
-            [self showPhotoWith:ciImage];
+            [self showPhotoWith:sampleBuffer];
         }
-        if (faceFeature.rightEyeClosed)
+        else if (faceFeature.rightEyeClosed)
         {
             NSLog(@"----------右眼眨眼--------");
-            [self showPhotoWith:ciImage];
+            [self showPhotoWith:sampleBuffer];
         }
     }
-    
 }
 
-- (void)showPhotoWith:(CIImage *)ciImage
+- (void)showPhotoWith:(CMSampleBufferRef)sampleBuffer
 {
+    return;
+    
+    UIImage *imaged = [self imageFromSampleBuffer:sampleBuffer];
+    UIImage *image = [self image:imaged rotation:UIImageOrientationRight];
+    
+    CGRect rect = self.cameraView.frame;
+    rect.size.width = image.size.width/5;
+    rect.size.height = image.size.height/5;
+    self.cameraView.frame = rect;
+    
+    isSave = YES;
+    
     dispatch_async(dispatch_get_main_queue(), ^{
         
-        UIImage *faceImage = [UIImage imageWithCIImage:ciImage scale:1 orientation:UIImageOrientationLeftMirrored];
+        self.cameraView.image = image;
+        NSString *path = [NSHomeDirectory() stringByAppendingPathComponent:@"Documents/photo.png"];
+        [UIImagePNGRepresentation(image) writeToFile:path atomically:YES];
+        AudioServicesPlaySystemSound(1108);
+        [self.session stopRunning];
         
-        CGRect rect = self.cameraView.frame;
-        rect.size.width = faceImage.size.width/5;
-        rect.size.height = faceImage.size.height/5;
-        self.cameraView.frame = rect;
+//        ShowImageViewController *vc = [[ShowImageViewController alloc] init];
+//        vc.showImage = image;
+//        [self presentViewController:vc animated:YES completion:NULL];
         
-        UIImageWriteToSavedPhotosAlbum(faceImage, nil, nil, nil);
+//        [self performSelector:@selector(saveFinish) withObject:nil afterDelay:1.0];
+    });
+    
+//    UIImageWriteToSavedPhotosAlbum(image, self, @selector(image:didFinishSavingWithError:contextInfo:), NULL);
+}
+
+- (void)saveFinish
+{
+    isSave = NO;
+    [self.session startRunning];
+}
+
+- (void)image: (UIImage *) image didFinishSavingWithError: (NSError *) error contextInfo: (void *) contextInfo
+{
+    NSString *msg = nil ;
+    if(error != NULL)
+    {
+        msg = @"保存图片失败" ;
         
-        self.cameraView.image = faceImage;
+    }else{
+        msg = @"保存图片成功" ;
+        
+        self.cameraView.image = image;
+        
+        NSString *path = [NSHomeDirectory() stringByAppendingPathComponent:@"Documents/photo.png"];
+        [UIImagePNGRepresentation(image) writeToFile:path atomically:YES];
         
         AudioServicesPlaySystemSound(1108);
         
         [self.session stopRunning];
-    });
+        
+        isSave = YES;
+    }
+    UIAlertView *alert = [[UIAlertView alloc] initWithTitle:@"保存图片结果提示"
+                                                    message:msg
+                                                   delegate:self
+                                          cancelButtonTitle:@"确定"
+                                          otherButtonTitles:nil];
+    [alert show];
 }
 
+//来自：http://blog.sina.com.cn/s/blog_6dce99b10101bswg.html
+// 通过抽样缓存数据创建一个UIImage对象
+- (UIImage *) imageFromSampleBuffer:(CMSampleBufferRef) sampleBuffer
+{
+    // 为媒体数据设置一个CMSampleBuffer的Core Video图像缓存对象
+    CVImageBufferRef imageBuffer = CMSampleBufferGetImageBuffer(sampleBuffer);
+    // 锁定pixel buffer的基地址
+    CVPixelBufferLockBaseAddress(imageBuffer, 0);
+    
+    // 得到pixel buffer的基地址
+    void *baseAddress = CVPixelBufferGetBaseAddress(imageBuffer);
+    
+    // 得到pixel buffer的行字节数
+    size_t bytesPerRow = CVPixelBufferGetBytesPerRow(imageBuffer);
+    // 得到pixel buffer的宽和高
+    size_t width = CVPixelBufferGetWidth(imageBuffer);
+    size_t height = CVPixelBufferGetHeight(imageBuffer);
+    
+    // 创建一个依赖于设备的RGB颜色空间
+    CGColorSpaceRef colorSpace = CGColorSpaceCreateDeviceRGB();
+    
+    // 用抽样缓存的数据创建一个位图格式的图形上下文（graphics context）对象
+    CGContextRef context = CGBitmapContextCreate(baseAddress, width, height, 8,
+                                                 bytesPerRow, colorSpace, kCGBitmapByteOrder32Little | kCGImageAlphaPremultipliedFirst);
+    // 根据这个位图context中的像素数据创建一个Quartz image对象
+    CGImageRef quartzImage = CGBitmapContextCreateImage(context);
+    // 解锁pixel buffer
+    CVPixelBufferUnlockBaseAddress(imageBuffer,0);
+    
+    // 释放context和颜色空间
+    CGContextRelease(context);
+    CGColorSpaceRelease(colorSpace);
+    
+    // 用Quartz image创建一个UIImage对象image
+    UIImage *image = [UIImage imageWithCGImage:quartzImage];
+    
+    // 释放Quartz image对象
+    CGImageRelease(quartzImage);
+    
+    return (image);
+}
+
+//图片旋转
+- (UIImage *)image:(UIImage *)image rotation:(UIImageOrientation)orientation
+{
+    long double rotate = 0.0;
+    CGRect rect;
+    float translateX = 0;
+    float translateY = 0;
+    float scaleX = 1.0;
+    float scaleY = 1.0;
+    
+    switch (orientation) {
+        case UIImageOrientationLeft:
+            rotate = M_PI_2;
+            rect = CGRectMake(0, 0, image.size.height, image.size.width);
+            translateX = 0;
+            translateY = -rect.size.width;
+            scaleY = rect.size.width/rect.size.height;
+            scaleX = rect.size.height/rect.size.width;
+            break;
+        case UIImageOrientationRight:
+            rotate = 3 * M_PI_2;
+            rect = CGRectMake(0, 0, image.size.height, image.size.width);
+            translateX = -rect.size.height;
+            translateY = 0;
+            scaleY = rect.size.width/rect.size.height;
+            scaleX = rect.size.height/rect.size.width;
+            break;
+        case UIImageOrientationDown:
+            rotate = M_PI;
+            rect = CGRectMake(0, 0, image.size.width, image.size.height);
+            translateX = -rect.size.width;
+            translateY = -rect.size.height;
+            break;
+        default:
+            rotate = 0.0;
+            rect = CGRectMake(0, 0, image.size.width, image.size.height);
+            translateX = 0;
+            translateY = 0;
+            break;
+    }
+
+    UIGraphicsBeginImageContext(rect.size);
+    CGContextRef context = UIGraphicsGetCurrentContext();
+    //做CTM变换
+    CGContextTranslateCTM(context, 0.0, rect.size.height);
+    CGContextScaleCTM(context, 1.0, -1.0);
+    CGContextRotateCTM(context, rotate);
+    CGContextTranslateCTM(context, translateX, translateY);
+    
+    CGContextScaleCTM(context, scaleX, scaleY);
+    //绘制图片
+    CGContextDrawImage(context, CGRectMake(0, 0, rect.size.width, rect.size.height), image.CGImage);
+    
+    UIImage *newPic = UIGraphicsGetImageFromCurrentImageContext();
+    
+    return newPic;
+}
 
 - (void)touchesBegan:(NSSet *)touches withEvent:(UIEvent *)event
 {
@@ -233,6 +472,8 @@
         [self.session startRunning];
         
         self.cameraView.image = nil;
+        
+        isSave = NO;
     }
 }
 

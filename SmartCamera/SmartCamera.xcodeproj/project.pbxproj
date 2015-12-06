@@ -7,7 +7,8 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		0433BB951BDA70DA0025738A /* UIDevice+ExifOrientation.m in Sources */ = {isa = PBXBuildFile; fileRef = 0433BB941BDA70DA0025738A /* UIDevice+ExifOrientation.m */; settings = {ASSET_TAGS = (); }; };
+		0430C1CB1C0C8A3E00D21A3F /* ShowImageViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 0430C1CA1C0C8A3E00D21A3F /* ShowImageViewController.m */; };
+		0433BB951BDA70DA0025738A /* UIDevice+ExifOrientation.m in Sources */ = {isa = PBXBuildFile; fileRef = 0433BB941BDA70DA0025738A /* UIDevice+ExifOrientation.m */; };
 		04B755721BDA5C6A002010EE /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 04B755711BDA5C6A002010EE /* main.m */; };
 		04B755751BDA5C6A002010EE /* AppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 04B755741BDA5C6A002010EE /* AppDelegate.m */; };
 		04B755781BDA5C6A002010EE /* ViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 04B755771BDA5C6A002010EE /* ViewController.m */; };
@@ -28,6 +29,8 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
+		0430C1C91C0C8A3E00D21A3F /* ShowImageViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ShowImageViewController.h; sourceTree = "<group>"; };
+		0430C1CA1C0C8A3E00D21A3F /* ShowImageViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ShowImageViewController.m; sourceTree = "<group>"; };
 		0433BB931BDA70DA0025738A /* UIDevice+ExifOrientation.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "UIDevice+ExifOrientation.h"; sourceTree = "<group>"; };
 		0433BB941BDA70DA0025738A /* UIDevice+ExifOrientation.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "UIDevice+ExifOrientation.m"; sourceTree = "<group>"; };
 		04B7556C1BDA5C6A002010EE /* SmartCamera.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = SmartCamera.app; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -88,6 +91,8 @@
 				04B755741BDA5C6A002010EE /* AppDelegate.m */,
 				04B755761BDA5C6A002010EE /* ViewController.h */,
 				04B755771BDA5C6A002010EE /* ViewController.m */,
+				0430C1C91C0C8A3E00D21A3F /* ShowImageViewController.h */,
+				0430C1CA1C0C8A3E00D21A3F /* ShowImageViewController.m */,
 				0433BB931BDA70DA0025738A /* UIDevice+ExifOrientation.h */,
 				0433BB941BDA70DA0025738A /* UIDevice+ExifOrientation.m */,
 				04B755791BDA5C6A002010EE /* Main.storyboard */,
@@ -226,6 +231,7 @@
 			files = (
 				04B755781BDA5C6A002010EE /* ViewController.m in Sources */,
 				04B755751BDA5C6A002010EE /* AppDelegate.m in Sources */,
+				0430C1CB1C0C8A3E00D21A3F /* ShowImageViewController.m in Sources */,
 				0433BB951BDA70DA0025738A /* UIDevice+ExifOrientation.m in Sources */,
 				04B755721BDA5C6A002010EE /* main.m in Sources */,
 			);
@@ -353,9 +359,13 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CODE_SIGN_IDENTITY = "iPhone Developer: qijun kang (WV4PC7NQSZ)";
 				INFOPLIST_FILE = SmartCamera/Info.plist;
+				IPHONEOS_DEPLOYMENT_TARGET = 7.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
+				PRODUCT_BUNDLE_IDENTIFIER = com.testapp.kang;
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				PROVISIONING_PROFILE = "b8b60664-1914-4df6-accb-ae6776954c6d";
 			};
 			name = Debug;
 		};
@@ -363,9 +373,13 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CODE_SIGN_IDENTITY = "iPhone Developer: qijun kang (WV4PC7NQSZ)";
 				INFOPLIST_FILE = SmartCamera/Info.plist;
+				IPHONEOS_DEPLOYMENT_TARGET = 7.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
+				PRODUCT_BUNDLE_IDENTIFIER = com.testapp.kang;
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				PROVISIONING_PROFILE = "b8b60664-1914-4df6-accb-ae6776954c6d";
 			};
 			name = Release;
 		};
